@@ -22,16 +22,20 @@ namespace OlympicGamesKingslee
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddMemoryCache();
+            services.AddSession();
+
             services.AddControllersWithViews();
 
             services.AddDbContext<OlympicsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("OlympicsContext")));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        // Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app)
         {
             
             app.UseDeveloperExceptionPage();
@@ -40,12 +44,12 @@ namespace OlympicGamesKingslee
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "custom",
-                    pattern: "{controller}/{action}/gameType/{activeGame}/category/{activeCategory}");
+                    name: "",
+                    pattern: "{controller=Home}/{action=Index}/category/{activeCategory}/gameType/{activeGame}");
 
                 endpoints.MapControllerRoute(
                     name: "default",
